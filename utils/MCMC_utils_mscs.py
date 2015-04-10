@@ -1,6 +1,5 @@
 import scipy as sp
 import scipy.ndimage
-import readcollatedmscs
 import numpy as np
 
 def compute_energies(seqs,batches,emat):
@@ -80,63 +79,6 @@ def compute_MI(seqs,batches,emat):
                 MI = MI + f_reg[i,j]*sp.log2(f_reg[i,j]/(p_b[i]*p_s[j]))
     print MI
     return MI,f_reg
-
-def load_seqs_batches(data_fn,mut_region_start,mut_region_length):
-    N = 0
-    f = open(data_fn)
-    for line in f:
-        if line.strip():
-            N = N + 1
-    f.close()
-    print N
-
-    # instantiate batch and sequence variables
-    batch_vec = sp.zeros(N,dtype=int)
-    seq_mat = sp.zeros((4,mut_region_length,N),dtype=int)
-
-    f = open(data_fn)
-    for i, line in enumerate(f):
-        if line.strip():
-            sb = line.split(',')
-            batch_vec[i] = int(sb[1])
-            seq_mat[:,:,i] = seq2mat(sb[0][mut_region_start:mut_region_start+mut_region_length])
-    f.close()
-    batch_vec = batch_vec-batch_vec.min()
-
-    return seq_mat,batch_vec
-
-def load_unique_seqs_batches(data_fn1,data_fn2,data_fn3,data_fn4,mut_region_start,mut_region_length):
-    """Load in unique sequence-batche pairs from data file.
-
-    INPUTS:
-    data_fn: csv file containing sequence, batch
-    mut_region_start: sequence index corresponding to start of ROI
-    mut_region_length: self-evident
-
-    OUTPUTS:
-    seq_mat: 4xmut_region_lengthxN matrix containing sequence information
-    batch_vec: N length vector containing batches
-    """
-    
-    seq_mat1,numseq1 = readcollatedmscs.collatedmat(data_fn1)
-    seq_mat2,numseq2 = readcollatedmscs.collatedmat(data_fn2)
-    seq_mat3,numseq3 = readcollatedmscs.collatedmat(data_fn3)
-    seq_mat4,numseq4 = readcollatedmscs.collatedmat(data_fn4)
-    
-    numseq1 = np.array([0 for i in range(0, len(numseq1))])
-    numseq2 = np.array([1 for i in range(0, len(numseq2))])
-    numseq3 = np.array([2 for i in range(0, len(numseq3))])
-    numseq4 = np.array([3 for i in range(0, len(numseq4))])
-    batch_vec = np.hstack((numseq1,numseq2,numseq3,numseq4))
-    
-    # instantiate batch and sequence variables
-    
-    seq_mat = np.dstack((seq_mat1,seq_mat2,seq_mat3,seq_mat4))
-    print 'seq_mat done'
-   
-    
-    
-    return seq_mat,batch_vec
 
 def determine_sign_of_emat(emat,wt_seq):
     """determine what the correct sign is for an energy matrix. We will
