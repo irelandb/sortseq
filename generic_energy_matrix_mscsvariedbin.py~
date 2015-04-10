@@ -7,23 +7,21 @@ import ConfigParser
 import mscscfg
 import os
 import numpy as np
-import sys
-sys.path.append('/home/wireland/')
-sys.path.append('/home/wireland/sortseq/utils/')
+
+import readcollatedremoveoligos
 import readuniqueseqssingleend
 numbins = 4
 config = ConfigParser.RawConfigParser()
 # everything that needs to be changed goes here ########
 
-config.read('/home/wireland/mscS4815/data/mscL.cfg') #location of config file, change this to run on different datasets
-mut_region_start = config.getint('Input','mut_region_start') #not base pair number, distance from start of mut region
+
+config.read('/home/wireland/mscS4815/data/mscL.cfg')
+mut_region_start = config.getint('Input','mut_region_start')
 mut_region_length = config.getint('Input','mut_region_length')
 data_fnbase = config.get('Input','data_fnbase')
-expname = config.get('Input','expname') #ex MscS mut1, describes the experiment without the different batch numbers.
+expname = config.get('Input','expname')
 fnnames = glob.glob(data_fnbase + expname + '*.fasta')
 fnnames.sort()
-
-#this section determines from the barcode file where the mutated region starts for this oligo
 barcodefn = config.get('Input','barcodefn')
 
 barcode_dict = {}
@@ -38,7 +36,6 @@ for row in reader:
 numseq = [[] for i in range(0,4)]
 seq_mat = [[] for i in range(0,4)]
 
-#read in sequences from files
 sequences = [readuniqueseqssingleend.collatedmat(fn) for fn in fnnames]
 seq_start = len(barcode_dict[expname])
 seq_end = sequences[0][0].find(reverse_dict[expname][0:5])
@@ -49,7 +46,6 @@ for i in range(0,numbins):
 
 batch_vec_temp = []
 seqs = []
-#filter sequences for only unique sequences in the target range.
 for i in range(0,numbins):
     tempseqs = list(set(sequences[i]))
     seqs = seqs + [tempseqs[z][mut_region_start:mut_region_start + mut_region_length] for z in range(0,len(tempseqs))]
@@ -57,9 +53,9 @@ for i in range(0,numbins):
 
 batch_vec_temp = np.array(batch_vec_temp)
 
-
+#batch_vec_temp = [batch_vec_temp[i] for i in range(0,len(seqs)) if seqs[i].count('A') > 2 and len(seqs[i]) == mut_region_length]
 print len(batch_vec_temp)
-
+#seqs = [seqs[i] for i in range(0,len(seqs)) if seqs[i].count('A') > 2 and len(seqs[i]) == mut_region_length]
 print len(seqs)
 
 seq_mat_temp = np.empty([4,len(seqs[1]),len(seqs)])

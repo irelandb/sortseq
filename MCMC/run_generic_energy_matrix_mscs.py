@@ -1,9 +1,6 @@
 #!/home/wireland/bin/python2.7
 import argparse, os
 import pymc
-import sys
-sys.path.append('/home/wireland/sortseq/MCMC/')
-sys.path.append('/home/wireland/')
 import generic_energy_matrix_mscsvariedbin
 import stepper
 
