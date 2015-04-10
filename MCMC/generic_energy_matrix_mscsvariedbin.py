@@ -15,6 +15,10 @@ import numpy as np
 import csv
 
 import readuniqueseqssingleend
+#initial energy matrix
+emat_0 = MCMC_utils.fix_matrix_gauge(sp.randn(4,mut_region_length))
+
+#now load in 
 numbins = 4
 config = ConfigParser.RawConfigParser()
 # everything that needs to be changed goes here ########
