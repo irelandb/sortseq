@@ -75,7 +75,7 @@ echo Using ${NPROCS} processors across ${NNODES} nodes
 ## ${MPIRUN} -machinefile $PBS_NODEFILE -np ${NPROCS} my-openmpi-program
 
 ### Or, just run your serial program
-$HOME/run_generic_energy_matrix_mscs.py $runnum
+$HOME/run_generic_energy_matrix_mscs.py $runnum $savefn
 # $HOME/lassotrilacstar.py
 # PBS environment variables available in every batch job:
 #
