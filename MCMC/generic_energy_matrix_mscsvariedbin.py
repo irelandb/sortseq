@@ -7,6 +7,7 @@ import scipy.ndimage
 import MCMC_utils_mscs
 import MCMC_utils
 import ConfigParser
+import glob
 import mscscfg
 import os
 import numpy as np
