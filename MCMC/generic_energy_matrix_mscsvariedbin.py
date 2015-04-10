@@ -4,12 +4,14 @@ sys.path.append('/home/wireland/sortseq/utils/')
 import scipy as sp
 import pymc
 import scipy.ndimage
+import glob
 import MCMC_utils_mscs
 import MCMC_utils
 import ConfigParser
 import mscscfg
 import os
 import numpy as np
+import csv
 
 import readuniqueseqssingleend
 numbins = 4
