@@ -16,7 +16,7 @@ numbins = 4
 config = ConfigParser.RawConfigParser()
 # everything that needs to be changed goes here ########
 
-config.read('/home/wireland/mscS4815/data/mscL.cfg') #location of config file, change this to run on different datasets
+config.read('/home/wireland/mscS4-8-15/data/mscL.cfg') #location of config file, change this to run on different datasets
 mut_region_start = config.getint('Input','mut_region_start') #not base pair number, distance from start of mut region
 mut_region_length = config.getint('Input','mut_region_length')
 data_fnbase = config.get('Input','data_fnbase')
