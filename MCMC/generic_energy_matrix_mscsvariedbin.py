@@ -7,8 +7,9 @@ import ConfigParser
 import mscscfg
 import os
 import numpy as np
-
-import readcollatedremoveoligos
+import sys
+sys.path.append('/home/wireland/')
+sys.path.append('/home/wireland/sortseq/utils/')
 import readuniqueseqssingleend
 numbins = 4
 config = ConfigParser.RawConfigParser()
