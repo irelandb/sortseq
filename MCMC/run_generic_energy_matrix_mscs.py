@@ -1,14 +1,8 @@
 #!/home/wireland/bin/python2.7
 import argparse, os
 import pymc
-import sys
-sys.path.append('/home/wireland/sortseq/MCMC/')
-sys.path.append('/home/wireland/')
 import generic_energy_matrix_mscsvariedbin
 import stepper
-import sys
-sys.path.append('/home/wireland/sortseq/')
-sys.path.append('/home/wireland/')
 
 # file to save trace to is passed as command line argument
 # also, the config file should be passed as cli. This enables some 

@@ -102,8 +102,8 @@ for z in range(0,len(seq_mat_temp[0,:,0])):
         condT = np.array([float(Tnumseq[i])/float(Tsum) for i in range(0,numbins)])
         totsum = np.sum(np.array([Asum,Csum,Gsum,Tsum]))
         #print np.sum(-pbatch*np.log2(pbatch)) + np.sum((Asum/totsum)*(condA)*np.log2(condA) + Csum/totsum*(condC)*np.log2(condC) + Gsum/totsum*(condG)*np.log2(condG) +  Tsum/totsum*condT*np.log2(condT))
-        ifoot[z] =  np.sum(-pbatch*np.log2(pbatch)) + np.sum((Asum/totsum)*(condA)*np.log2(condA) + Csum/totsum*(condC)*np.log2(condC) + Gsum/totsum*(condG)*np.log2(condG) +  Tsum/totsum*condT*np.log2(condT))
-        ifootrenorm[z] = np.sum(-pbatch*np.log2(pbatch)) + .25*np.sum((condA)*np.log2(condA) + (condC)*np.log2(condC) + (condG)*np.log2(condG) +  condT*np.log2(condT))
+        ifoot[z] =  np.sum(-pbatch*np.log2(pbatch)) + np.sum((Asum/totsum)*(condA)*np.log2(condA) + Csum/totsum*(condC)*np.log2(condC) + Gsum/totsum*(condG)*np.log2(condG) +  Tsum/totsum*condT*np.log2(condT)) - (len(sequences)-1)*3*np.log2(np.exp(1))/(2*len(seq_mat_temp[0,0,:]))
+        ifootrenorm[z] = np.sum(-pbatch*np.log2(pbatch)) + .25*np.sum((condA)*np.log2(condA) + (condC)*np.log2(condC) + (condG)*np.log2(condG) +  condT*np.log2(condT)) - (len(sequences)-1)*3*np.log2(np.exp(1))/(2*len(seq_mat_temp[0,0,:]))
     except:
         print z
         pass

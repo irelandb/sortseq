@@ -10,39 +10,39 @@ import numpy as np
 
 import readcollatedremoveoligos
 import readuniqueseqssingleend
+numbins = 4
 config = ConfigParser.RawConfigParser()
 # everything that needs to be changed goes here ########
 
-##################
-config.read(mscscfg.cfg_fn)
 
+config.read('/home/wireland/mscS4815/data/mscL.cfg')
 mut_region_start = config.getint('Input','mut_region_start')
 mut_region_length = config.getint('Input','mut_region_length')
-seq_start = config.getint('Input','seqstart')
-seq_end = config.getint('Input','seqend')
-datab0 = config.get('Input','data_fn1')
-datab01 = config.get('Input','data_fn2')
-datab02 = config.get('Input','data_fn3')
-datab03 = config.get('Input','data_fn4')
+data_fnbase = config.get('Input','data_fnbase')
+expname = config.get('Input','expname')
+fnnames = glob.glob(data_fnbase + expname + '*.fasta')
+fnnames.sort()
+barcodefn = config.get('Input','barcodefn')
 
-# initialize random energy matrix
-emat_0 = MCMC_utils_mscs.fix_matrix_gauge(sp.randn(4,mut_region_length))
-# load in the data
+barcode_dict = {}
+reverse_dict = {}
+csvfile = open(barcodefn,'r')
+reader = csv.DictReader(csvfile)
+for row in reader:
+    barcode_dict[row['experiment_name']] = row['fwd_barcode']
+    reverse_dict[row['experiment_name']] = row['rev_barcode']
+
 
 numseq = [[] for i in range(0,4)]
 seq_mat = [[] for i in range(0,4)]
 
-sequences0,u = readuniqueseqssingleend.collatedmat(datab0)
-sequences1,u = readuniqueseqssingleend.collatedmat(datab01)
-sequences2,u = readuniqueseqssingleend.collatedmat(datab02)
-sequences3,u = readuniqueseqssingleend.collatedmat(datab03)
-numbins = 4
-sequences = [sequences0,sequences1,sequences2,sequences3]
-
+sequences = [readuniqueseqssingleend.collatedmat(fn) for fn in fnnames]
+seq_start = len(barcode_dict[expname])
+seq_end = sequences[0][0].find(reverse_dict[expname][0:5])
 print 'sequences loaded'
-print len(sequences0)
+print len(sequences[0])
 for i in range(0,numbins):
-    sequences[i] = [sequences[i][z][seq_start:seq_end] for z in range(0,len(sequences[i])) if sequences[i][z][seq_start:seq_end].count('N') == 0 and len(sequences[i][z][seq_start:seq_end]) == (seq_end - seq_start)]
+    sequences[i] = [sequences[i][z][seq_start:seq_end] for z in range(0,len(sequences[i]))]
 
 batch_vec_temp = []
 seqs = []
@@ -52,34 +52,7 @@ for i in range(0,numbins):
     batch_vec_temp = batch_vec_temp + [i for z in range(0,len(tempseqs))]
 
 batch_vec_temp = np.array(batch_vec_temp)
-'''  
-a = list(set(sequences0))
 
-a = [a[i][mut_region_start:mut_region_start + mut_region_length] for i in range(0,len(a))]
-
-a1 = list(set(sequences1))
-a1 = [a1[i][mut_region_start:mut_region_start + mut_region_length] for i in range(0,len(a1))]
-
-a2 = list(set(sequences2))
-a2 = [a2[i][mut_region_start:mut_region_start + mut_region_length] for i in range(0,len(a2))]
-
-a3 = list(set(sequences3))
-a3 = [a3[i][mut_region_start:mut_region_start + mut_region_length] for i in range(0,len(a3))]
-
-
-
-    
-
-   
-batchvec0 = [0 for i in range(0,len(a))]
-batchvec1 = [1 for i in range(0,len(a1))]
-batchvec2 = [2 for i in range(0,len(a2))]
-batchvec3 = [3 for i in range(0,len(a3))]
-
-batch_vec_temp = np.array(batchvec0 + batchvec1 + batchvec2 + batchvec3)
-
-seqs = a + a1 + a2 + a3 
-'''
 #batch_vec_temp = [batch_vec_temp[i] for i in range(0,len(seqs)) if seqs[i].count('A') > 2 and len(seqs[i]) == mut_region_length]
 print len(batch_vec_temp)
 #seqs = [seqs[i] for i in range(0,len(seqs)) if seqs[i].count('A') > 2 and len(seqs[i]) == mut_region_length]
