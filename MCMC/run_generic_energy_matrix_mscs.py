@@ -20,8 +20,6 @@ expname = config.get('Input','expname') #ex MscS mut1, describes the experiment 
 parser = argparse.ArgumentParser()
 parser.add_argument('runnum',help='Filename of database file to save traces to.')
 parser.add_argument('savefn')
-parser.add_argument('condbase')
-parser.add_argument('condident')
 #parser.add_argument('cfg_fn',help='Filename pymc config file for the run.')
 
 args = parser.parse_args()
@@ -39,7 +37,7 @@ fulldbname = '/home/wireland/mscS4-8-15/results/' + str(args.savefn) + str(args.
 M = pymc.MCMC(generic_energy_matrix_mscsvariedbin,db='sqlite',dbname=fulldbname)
 M.use_step_method(stepper.GaugePreservingStepper,generic_energy_matrix_mscsvariedbin.emat)
 f = open('/home/wireland/mscS4-8-15/runsdetails/' + str(args.savefn) + str(args.runnum) + '.txt','w')
-f.writelines([str(condbase) + ' = condbase \n', str(condident) ' = condident \n, 'dbname = ' + fulldbname + '\n', 'mut_region_start = ' + str(mut_region_start) + '\n','mut_region_length = ' + str(mut_region_length) + '\n', 'exp_name = ' + str(expname)])
+f.writelines(['dbname = ' + fulldbname + '\n', 'mut_region_start = ' + str(mut_region_start) + '\n','mut_region_length = ' + str(mut_region_length) + '\n', 'exp_name = ' + str(expname)])
 f.close()
 M.sample(30000,thin=10)
 
