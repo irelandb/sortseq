@@ -20,8 +20,6 @@ expname = config.get('Input','expname') #ex MscS mut1, describes the experiment 
 parser = argparse.ArgumentParser()
 parser.add_argument('runnum',help='Filename of database file to save traces to.')
 parser.add_argument('savefn')
-parser.add_argument('condbase')
-parser.add_argument('condident')
 #parser.add_argument('cfg_fn',help='Filename pymc config file for the run.')
 
 args = parser.parse_args()
