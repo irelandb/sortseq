@@ -65,8 +65,7 @@ for i in range(0,numbins):
     tempseqs = list(set(sequences[i]))
     seqs = seqs + [tempseqs[z][mut_region_start:mut_region_start + mut_region_length] for z in range(0,len(tempseqs)) if tempseqs[z][condbase] == condident]
     batch_vec_temp = batch_vec_temp + [i for z in range(0,len(tempseqs)) if tempseqs[z][condbase] == condident]
-for z,seq in enumerate(seqs):
-	seqs[z][condbase] = np.random.choice(['A','C','G','T'])
+
 batch_vec_temp = np.array(batch_vec_temp)
 
 
@@ -79,6 +78,7 @@ seq_mat_temp = np.empty([4,len(seqs[1]),len(seqs)])
 
 for i, line in enumerate(seqs):
     seq_mat_temp[:,:,i] = MCMC_utils.seq2mat(line)
+    seq_mat_temp[:,condbase,i] = MCMC_utils.seq2mat(np.random.choice(['A','C','G','T']))
 
 #initial energy matrix
 emat_0 = MCMC_utils.fix_matrix_gauge(sp.randn(4,mut_region_length))
