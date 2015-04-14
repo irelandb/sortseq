@@ -75,10 +75,13 @@ print len(seqs)
 
 seq_mat_temp = np.empty([4,len(seqs[1]),len(seqs)])
 
-
-for i, line in enumerate(seqs):
-    seq_mat_temp[:,:,i] = MCMC_utils.seq2mat(line)
-    seq_mat_temp[:,condbase,i] = MCMC_utils.seq2mat(np.random.choice(['A','C','G','T']))
+if condbase > mut_region_start and condbase < mut_region_start + mut_region_length:
+	for i, line in enumerate(seqs):
+    		seq_mat_temp[:,:,i] = MCMC_utils.seq2mat(line)
+    		seq_mat_temp[:,condbase,i] = MCMC_utils.seq2mat(np.random.choice(['A','C','G','T']))
+else:
+	for i, line in enumerate(seqs):
+    		seq_mat_temp[:,:,i] = MCMC_utils.seq2mat(line)
 
 #initial energy matrix
 emat_0 = MCMC_utils.fix_matrix_gauge(sp.randn(4,mut_region_length))
