@@ -1,124 +1,91 @@
+import sys
+sys.path.append('/home/wireland/')
+sys.path.append('/home/wireland/sortseq/utils/')
 import scipy as sp
 import pymc
 import scipy.ndimage
+import glob
 import MCMC_utils_mscs
 import MCMC_utils
 import ConfigParser
+import glob
 import mscscfg
 import os
 import numpy as np
+import csv
 
-import readcollatedremoveoligos
+import readuniqueseqssingleend
 
+
+f = open('/home/wireland/mscS4-8-15/runsdetails/condinfo.txt','r')
+raw = f.read().split('-')
+condbase = int(raw[0])
+condident = raw[1]
+
+numbins = 4
 config = ConfigParser.RawConfigParser()
 # everything that needs to be changed goes here ########
 
-##################
-config.read(os.path.expanduser(mscscfg.cfg_fn))
-basetype = 3
-mut_region_start = config.getint('Input','mut_region_start')
+config.read('/home/wireland/mscS4-8-15/data/mscL.cfg') #location of config file, change this to run on different datasets
+mut_region_start = config.getint('Input','mut_region_start') #not base pair number, distance from start of mut region
 mut_region_length = config.getint('Input','mut_region_length')
-seq_start = config.getint('Input','seqstart')
-seq_end = config.getint('Input','seqend')
-datab0 = config.get('Input','data_fn1')
-datab01 = config.get('Input','data_fn2')
-datab02 = config.get('Input','data_fn3')
-datab03 = config.get('Input','data_fn4')
+data_fnbase = config.get('Input','data_fnbase')
+expname = config.get('Input','expname') #ex MscS mut1, describes the experiment without the different batch numbers.
+fnnames = glob.glob(data_fnbase + expname + '*.fasta')
+fnnames.sort()
 
-# initialize random energy matrix
-emat_0 = MCMC_utils_mscs.fix_matrix_gauge(sp.randn(4,mut_region_length))
-# load in the data
+#this section determines from the barcode file where the mutated region starts for this oligo
+barcodefn = config.get('Input','barcodefn')
+
+barcode_dict = {}
+reverse_dict = {}
+csvfile = open(barcodefn,'r')
+reader = csv.DictReader(csvfile)
+for row in reader:
+    barcode_dict[row['experiment_name']] = row['fwd_barcode']
+    reverse_dict[row['experiment_name']] = row['rev_barcode']
 
 
 numseq = [[] for i in range(0,4)]
 seq_mat = [[] for i in range(0,4)]
 
-sequences0 = readcollatedremoveoligos.collatedmat(datab0)
-sequences1 = readcollatedremoveoligos.collatedmat(datab01)
-sequences2 = readcollatedremoveoligos.collatedmat(datab02)
-sequences3 = readcollatedremoveoligos.collatedmat(datab03)
-
+#read in sequences from files
+sequences = [readuniqueseqssingleend.collatedmat(fn) for fn in fnnames]
+seq_start = len(barcode_dict[expname])
+seq_end = sequences[0][0].find(reverse_dict[expname][0:5])
 print 'sequences loaded'
-print len(sequences0)
-    
-sequences0 = [sequences0[i][seq_start:seq_end] for i in range(0,len(sequences0))]
+print len(sequences[0])
+for i in range(0,numbins):
+    sequences[i] = [sequences[i][z][seq_start:seq_end] for z in range(0,len(sequences[i]))]
 
-sequences1 = [sequences1[i][seq_start:seq_end] for i in range(0,len(sequences1))]
+batch_vec_temp = []
+seqs = []
+#filter sequences for only unique sequences in the target range.
+for i in range(0,numbins):
+    tempseqs = list(set(sequences[i]))
+    seqs = seqs + [tempseqs[z][mut_region_start:mut_region_start + mut_region_length] for z in range(0,len(tempseqs)) if tempseqs[z][condbase] == condident]
+    batch_vec_temp = batch_vec_temp + [i for z in range(0,len(tempseqs)) if tempseqs[z][condbase] == condident]
 
-sequences2 = [sequences2[i][seq_start:seq_end] for i in range(0,len(sequences2))]
-
-sequences3 = [sequences3[i][seq_start:seq_end] for i in range(0,len(sequences3))]
+batch_vec_temp = np.array(batch_vec_temp)
 
 
-a = list(set(sequences0))
-
-#a = [a[i][mut_region_start:mut_region_start + mut_region_length] for i in range(0,len(a))]
-a1 = list(set(sequences1))
-#a1 = [a1[i][mut_region_start:mut_region_start + mut_region_length] for i in range(0,len(a1))]
-a2 = list(set(sequences2))
-#a2 = [a2[i][mut_region_start:mut_region_start + mut_region_length] for i in range(0,len(a2))]
-
-a3 = list(set(sequences3))
-#a3 = [a3[i][mut_region_start:mut_region_start + mut_region_length] for i in range(0,len(a3))]
-
-    
-
-   
-batchvec0 = [0 for i in range(0,len(a))]
-batchvec1 = [1 for i in range(0,len(a1))]
-batchvec2 = [2 for i in range(0,len(a2))]
-batchvec3 = [3 for i in range(0,len(a3))]
-batch_vec_temp = np.array(batchvec0 + batchvec1 + batchvec2 + batchvec3)
-
-seqs = a + a1 + a2 + a3
-
-#batch_vec_temp = [batch_vec_temp[i] for i in range(0,len(seqs)) if seqs[i].count('A') > 2 and len(seqs[i]) == mut_region_length]
 print len(batch_vec_temp)
-#seqs = [seqs[i] for i in range(0,len(seqs)) if seqs[i].count('A') > 2 and len(seqs[i]) == mut_region_length]
+
 print len(seqs)
 
 seq_mat_temp = np.empty([4,len(seqs[1]),len(seqs)])
 
+if condbase >= mut_region_start and condbase < mut_region_start + mut_region_length:
+	for i, line in enumerate(seqs):
+    		seq_mat_temp[:,:,i] = MCMC_utils.seq2mat(line)
+    		seq_mat_temp[:,condbase,i] = MCMC_utils.seq2mat(np.random.choice(['A','C','G','T']))
+else:
+	for i, line in enumerate(seqs):
+    		seq_mat_temp[:,:,i] = MCMC_utils.seq2mat(line)
 
-for i, line in enumerate(seqs):
-    seq_mat_temp[:,:,i] = MCMC_utils.seq2mat(line)
-condbase = 34
-Apos20 = np.nonzero(seq_mat_temp[basetype,condbase,:])[0]
+#initial energy matrix
+emat_0 = MCMC_utils.fix_matrix_gauge(sp.randn(4,mut_region_length))
 
-print len(Apos20)
-seq_mat_temp = seq_mat_temp[:,:,Apos20]
-batch_vec_temp = batch_vec_temp[Apos20]
-
-let0 = ['A' for i in range(0,list(batch_vec_temp).count(0)/4)]
-let1 = ['C' for i in range(0,list(batch_vec_temp).count(0)/4)]
-let2 = ['G' for i in range(0,list(batch_vec_temp).count(0)/4)]
-let3 = ['T' for i in range(0,list(batch_vec_temp).count(0) - len(let1) -len(let2) -len(let0))]
-let = let0 + let1 + let2 + let3
-let0 = ['A' for i in range(0,list(batch_vec_temp).count(1)/4)]
-let1 = ['C' for i in range(0,list(batch_vec_temp).count(1)/4)]
-let2 = ['G' for i in range(0,list(batch_vec_temp).count(1)/4)]
-let3 = ['T' for i in range(0,list(batch_vec_temp).count(1) - len(let1) -len(let2) -len(let0))]
-let = let + let0 + let1 + let2 + let3
-let0 = ['A' for i in range(0,list(batch_vec_temp).count(2)/4)]
-let1 = ['C' for i in range(0,list(batch_vec_temp).count(2)/4)]
-let2 = ['G' for i in range(0,list(batch_vec_temp).count(2)/4)]
-let3 = ['T' for i in range(0,list(batch_vec_temp).count(2) - len(let1) -len(let2) -len(let0))]
-let = let + let0 + let1 + let2 + let3 
-let0 = ['A' for i in range(0,list(batch_vec_temp).count(3)/4)]
-let1 = ['C' for i in range(0,list(batch_vec_temp).count(3)/4)]
-let2 = ['G' for i in range(0,list(batch_vec_temp).count(3)/4)]
-let3 = ['T' for i in range(0,list(batch_vec_temp).count(3) - len(let1) -len(let2) -len(let0))]
-let = let + let0 + let1 + let2 + let3
-
-
-for i, l in enumerate(let):
-	seq_mat_temp[:,condbase,i] = MCMC_utils.seq2mat(l)[:,0]
-
-seq_mat_temp = seq_mat_temp[:,mut_region_start:mut_region_start + mut_region_length,:]
-
-
-
-# Run matrix on only section of data
 
 
 
