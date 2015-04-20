@@ -78,7 +78,7 @@ seq_mat_temp = np.empty([4,len(seqs[1]),len(seqs)])
 if condbase >= mut_region_start and condbase < mut_region_start + mut_region_length:
 	for i, line in enumerate(seqs):
     		seq_mat_temp[:,:,i] = MCMC_utils.seq2mat(line)
-    		seq_mat_temp[:,condbase,i] = MCMC_utils.seq2mat(np.random.choice(['A','C','G','T']))
+    		seq_mat_temp[:,condbase-mut_region_start,i] = MCMC_utils.seq2mat(np.random.choice(['A','C','G','T'])).transpose()
 else:
 	for i, line in enumerate(seqs):
     		seq_mat_temp[:,:,i] = MCMC_utils.seq2mat(line)
