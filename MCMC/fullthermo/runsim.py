@@ -31,7 +31,7 @@ args = parser.parse_args()
 #     raise ValueError("generic_energy_matrix module %s and script cli %s are not consistent" % (module_cfg,cli_cfg))
 
 #print args.db_fn
-fulldbname = '/home/bill/Documents/energymatrix/SimResults/' + str(args.savefn) + str(args.runnum) + '.sql'
+fulldbname = os.path.expanduser('~/SimResults/' + str(args.savefn) + str(args.runnum) + '.sql')
 #fulldbname = '/home/wireland/lassoresults/MCMC/MCMCtest3_' + str(args.runnum) + '.sql'
 M = pymc.MCMC(ThermoSim,db='sqlite',dbname=fulldbname)
 M.use_step_method(stepper.GaugePreservingStepper,ThermoSim.ematQ)
