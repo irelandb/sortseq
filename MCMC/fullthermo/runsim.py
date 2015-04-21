@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+#!/home/wireland/bin/python2.7
 """
 Created on Mon Apr 20 17:31:25 2015
 
