@@ -36,9 +36,9 @@ fulldbname = os.path.expanduser('~/SimResults/' + str(args.savefn) + str(args.ru
 M = pymc.MCMC(ThermoSim,db='sqlite',dbname=fulldbname)
 M.use_step_method(stepper.GaugePreservingStepper,ThermoSim.ematQ)
 M.use_step_method(stepper.GaugePreservingStepper,ThermoSim.ematR)
-M.use_step_method(pymc.Metropolis,ThermoSim.gamma)
-M.use_step_method(pymc.Metropolis,ThermoSim.sR)
-M.use_step_method(pymc.Metropolis,ThermoSim.sQ)
-M.use_step_method(pymc.Metropolis.ThermoSim.R_0)
+M.use_step_method(pymc.AdaptiveMetropolis,ThermoSim.gamma)
+M.use_step_method(pymc.AdaptiveMetropolis,ThermoSim.sR)
+M.use_step_method(pymc.AdaptiveMetropolis,ThermoSim.sQ)
+M.use_step_method(pymc.AdaptiveMetropolis,ThermoSim.R_0)
  
 M.sample(30000,thin=10)

@@ -20,7 +20,7 @@ import MCMC_utils_mscs
 N = 10000
 seqsQ = ThermoSimUtils.genseqs('CAG',N)
 seqsR = ThermoSimUtils.genseqs('CAG',N)
-fn = 'etest.txt'
+fn = os.path.expanduser('~/sortseq/MCMC/fullthermo/etest.txt')
 seq_matR = ThermoSimUtils.genmat(seqsR,'1Point')
 seq_matQ = ThermoSimUtils.genmat(seqsQ,'1Point')
 energies = ThermoSimUtils.genenergies(fn,fn,seqsR,seqsQ,-5,5,6,.1)

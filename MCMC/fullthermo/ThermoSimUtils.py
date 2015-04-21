@@ -5,8 +5,8 @@ Created on Tue Mar 24 16:16:55 2015
 @author: bill
 """
 import numpy as np
-import sys
-sys.path.append('/home/bill/kinneylab_software')
+import sys,os
+sys.path.append(os.path.expanduser('~/kinneylab_software'))
 import scipy as sp
 import mpmath as mp
 import nsbestimator as nsb
