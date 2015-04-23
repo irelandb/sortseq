@@ -23,7 +23,7 @@ seqsR = ThermoSimUtils.genseqs('CAG',N)
 fn = os.path.expanduser('~/sortseq/MCMC/fullthermo/etest.txt')
 seq_matR = ThermoSimUtils.genmat(seqsR,'1Point')
 seq_matQ = ThermoSimUtils.genmat(seqsQ,'1Point')
-energies = ThermoSimUtils.genenergies(fn,fn,seqsR,seqsQ,-5,5,6,.1)
+energies = ThermoSimUtils.genenergies(fn,fn,seqsR,seqsQ,-5,-5,-6,-.1)
 myscale = np.abs(energies)*.2
 expression = energies + np.random.normal(scale=myscale,size=len(energies))
 inds = sp.argsort(expression)
