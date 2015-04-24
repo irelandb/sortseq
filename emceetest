@@ -1,0 +1,16 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Apr 21 09:54:33 2015
+
+@author: bill
+"""
+
+def lnprob(vals):
+    for val, var in zip(vals,m.stochastics):
+        var.value = val
+    return m.logp
+
+ndim = len(m.stochastics)
+nwalkers = 500
+
+start = np.empty(ndim)

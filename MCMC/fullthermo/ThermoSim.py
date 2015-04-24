@@ -39,9 +39,9 @@ ematR_0 = MCMC_utils_mscs.fix_matrix_gauge(sp.randn(4,mut_region_lengthR))
 ematQ_0 = MCMC_utils_mscs.fix_matrix_gauge(sp.randn(4,mut_region_lengthQ))
 
 gamma = pymc.Uniform('gamma',-10,10,observed=False)
-sR = pymc.Uniform('sR',0,10,observed=False)
-sQ = pymc.Uniform('sQ',0,10,observed=False)
-R_0 = pymc.Uniform('R_0',0,2,observed=False)
+sR = pymc.Uniform('sR',-10,0,observed=False)
+sQ = pymc.Uniform('sQ',-10,0,observed=False)
+R_0 = pymc.Uniform('R_0',-2,0,observed=False)
 
 @pymc.stochastic(observed=True,dtype=int)
 def sequencesR(value=seq_matR):

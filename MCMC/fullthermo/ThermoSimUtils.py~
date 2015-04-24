@@ -5,8 +5,8 @@ Created on Tue Mar 24 16:16:55 2015
 @author: bill
 """
 import numpy as np
-import sys,os
-sys.path.append(os.path.expanduser('~/kinneylab_software'))
+import sys
+sys.path.append('/home/bill/kinneylab_software')
 import scipy as sp
 import mpmath as mp
 import nsbestimator as nsb
@@ -162,6 +162,7 @@ def genenergies(fnR,fnQ,seqsR,seqsQ,gamma,sQ,sR,R0): #Parses seqs and model type
 
 def compute_MI_orig(seq_matQ,seq_matR,batches,ematQ,ematR,gamma,sR,sQ,R_0):
     # preliminaries
+    print R_0
     n_seqs = len(batches)
     n_batches = int(batches.max()) + 1 # assumes zero indexed batches
     n_bins = 1000
@@ -261,56 +262,6 @@ def compute_MIlasso(seqs,batches,matrixcoefs,n_bins):
     #        if f_reg[i,j] != 0:
     #            MI = MI + f_reg[i,j]*sp.log2(f_reg[i,j]/(p_b[i]*p_s[j]))
     return MI
-    
-def compute_MI_origemcee(seq_matQ,seq_matR,batches,ematQ,ematR,gamma):
-    # preliminaries
-    n_seqs = len(batches)
-    n_batches = int(batches.max()) + 1 # assumes zero indexed batches
-    n_bins = 1000
-    
-    #energies = sp.zeros(n_seqs)
-    f = sp.zeros((n_batches,n_seqs))
-    
-    # compute energies
-    # for i in range(n_seqs):
-    #     energies[i] = sp.sum(seqs[:,:,i]*emat)
-    # alternate way
-    energies = np.zeros(n_seqs)
-    for i in range(n_seqs):
-    	RNAP = (seq_matQ[:,:,i]*ematQ).sum()
-    	TF = (seq_matR[:,:,i]*ematR).sum()
-    	energies[i] = -RNAP + mp.log(1 + mp.exp(-TF - gamma)) - mp.log(1 + mp.exp(-TF))
-
-
-    # sort energies
-    inds = sp.argsort(energies)
-    for i,ind in enumerate(inds):
-        f[batches[ind],i] = 1.0/n_seqs # batches aren't zero indexed
-        
-
-    # bin and convolve with Gaussian
-    f_binned = sp.zeros((n_batches,n_bins))
-    
-    for i in range(n_batches):
-        f_binned[i,:] = sp.histogram(f[i,:].nonzero()[0],bins=n_bins,range=(0,n_seqs))[0]
-    #f_binned = f_binned/f_binned.sum()
-    f_reg = sp.ndimage.gaussian_filter1d(f_binned,0.04*n_bins,axis=1)
-    f_reg = f_reg/f_reg.sum()
-
-    # compute marginal probabilities
-    p_b = sp.sum(f_reg,axis=1)
-    p_s = sp.sum(f_reg,axis=0)
-
-    # finally sum to compute the MI
-    MI = 0
-    for i in range(n_batches):
-        for j in range(n_bins):
-            if f_reg[i,j] != 0:
-                MI = MI + f_reg[i,j]*sp.log2(f_reg[i,j]/(p_b[i]*p_s[j]))
-    print MI
-    return MI,f_reg
-
-
 
     
     
