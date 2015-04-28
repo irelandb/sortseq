@@ -31,6 +31,7 @@ fnnames = glob.glob(data_fnbase + expname + '*.fasta')
 fnnames.sort()
 
 #this section determines from the barcode file where the mutated region starts for this oligo
+'''
 barcodefn = config.get('Input','barcodefn')
 
 barcode_dict = {}
@@ -40,15 +41,15 @@ reader = csv.DictReader(csvfile)
 for row in reader:
     barcode_dict[row['experiment_name']] = row['fwd_barcode']
     reverse_dict[row['experiment_name']] = row['rev_barcode']
-
+'''
 
 numseq = [[] for i in range(0,4)]
 seq_mat = [[] for i in range(0,4)]
 
 #read in sequences from files
 sequences = [readuniqueseqssingleend.collatedmat(fn) for fn in fnnames]
-seq_start = len(barcode_dict[expname])
-seq_end = sequences[0][0].find(reverse_dict[expname][0:5])
+seq_start = config.get('Input','seq_start')
+seq_end = config.get('Input','seq_end')
 print 'sequences loaded'
 print len(sequences[0])
 for i in range(0,numbins):
@@ -58,7 +59,7 @@ batch_vec_temp = []
 seqs = []
 #filter sequences for only unique sequences in the target range.
 for i in range(0,numbins):
-    #tempseqs = list(set(sequences[i])) I instead added this to the next line to make sure only sequences with unique mutated regions are counted.
+    tempseqs = sequences[i] #I instead added this to the next line to make sure only sequences with unique mutated regions are counted.
     seqs = seqs + list(set([tempseqs[z][mut_region_start:mut_region_start + mut_region_length] for z in range(0,len(tempseqs))]))
     batch_vec_temp = batch_vec_temp + [i for z in range(0,len(tempseqs))]
 

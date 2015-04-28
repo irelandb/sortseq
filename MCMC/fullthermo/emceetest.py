@@ -35,8 +35,8 @@ mut_region_lengthQ = len(seqsQ[0])
 mut_region_lengthR = len(seqsR[0])
 
 nwalkers = 58
-ntemps = 1
-TotalVals = np.zeros([ntemps,nwalkers,4*(mut_region_lengthR + mut_region_lengthQ)+1])   
+ntemps = 3
+TotalVals = np.zeros([ntemps,nwalkers,4*(mut_region_lengthR + mut_region_lengthQ)+2])   
 LR = 4*mut_region_lengthR
 LQ = 4*mut_region_lengthQ
 for w in range(ntemps):  
@@ -44,20 +44,24 @@ for w in range(ntemps):
         ematR_0 = MCMC_utils_mscs.fix_matrix_gauge(sp.randn(4,mut_region_lengthR)).ravel(order='F')  
         ematQ_0 = MCMC_utils_mscs.fix_matrix_gauge(sp.randn(4,mut_region_lengthQ)).ravel(order='F')
         g_0 = np.random.rand(1)*-10
-        #sR_0 = np.random.rand(1)*-10
-        #sQ_0 = np.random.rand(1)*-10
-        #Rin_0 = np.random.rand(1)*-1
+        #sR_0 = np.random.rand(1)*-10 #R = transcription factor
+        #sQ_0 = np.random.rand(1)*-10 #Q is RNAP
+        Rin_0 = np.random.rand(1)*-1
         TotalVals[w,i,:LR] = ematR_0
         TotalVals[w,i,LR:LR+LQ] = ematQ_0
         #TotalVals[i,-4:] = np.array([g_0,sR_0,sQ_0,Rin_0]).transpose()
-        TotalVals[w,i,-1] = g_0
+        TotalVals[w,i,-1] = Rin_0
+        TotalVals[w,i,-2] = g_0
     
 def lnprob(vals):
-    MI, f_reg = ThermoSimUtils.compute_MI_origemcee(seq_matQ,seq_matR,batch_vec,vals[LR:LR+LQ].reshape([4,mut_region_lengthQ],order='F'),vals[:LR].reshape([4,mut_region_lengthR],order='F'),vals[-1])
+    MI, f_reg = ThermoSimUtils.compute_MI_origemcee(seq_matQ,seq_matR,batch_vec,vals[LR:LR+LQ].reshape([4,mut_region_lengthQ],order='F'),vals[:LR].reshape([4,mut_region_lengthR],order='F'),vals[-2],vals[-1])
     return MI
     
 def logp(x):
-    return 0.0
+    if any(x> 40) or any(x < -40):
+        return 0.0
+    else:
+        return 1.0
     
 sampler = emcee.PTSampler(ntemps, nwalkers, len(TotalVals[0,0,:]), lnprob,logp)
 

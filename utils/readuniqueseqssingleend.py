@@ -11,10 +11,6 @@ def collatedmat(filename):
     for record in SeqIO.parse(f,'fasta'):
          seqs.append(str(record.seq))
 
-    print len(seqs)
-    unique = set(seqs)
-    print 'a'
-    print len(unique)
     #There seems to alwasy be a trailing empty selection so...
    
            

@@ -262,7 +262,7 @@ def compute_MIlasso(seqs,batches,matrixcoefs,n_bins):
     #            MI = MI + f_reg[i,j]*sp.log2(f_reg[i,j]/(p_b[i]*p_s[j]))
     return MI
     
-def compute_MI_origemcee(seq_matQ,seq_matR,batches,ematQ,ematR,gamma):
+def compute_MI_origemcee(seq_matQ,seq_matR,batches,ematQ,ematR,gamma,R_0):
     # preliminaries
     n_seqs = len(batches)
     n_batches = int(batches.max()) + 1 # assumes zero indexed batches
@@ -278,7 +278,7 @@ def compute_MI_origemcee(seq_matQ,seq_matR,batches,ematQ,ematR,gamma):
     energies = np.zeros(n_seqs)
     for i in range(n_seqs):
     	RNAP = (seq_matQ[:,:,i]*ematQ).sum()
-    	TF = (seq_matR[:,:,i]*ematR).sum()
+    	TF = (seq_matR[:,:,i]*ematR).sum() + R_0
     	energies[i] = -RNAP + mp.log(1 + mp.exp(-TF - gamma)) - mp.log(1 + mp.exp(-TF))
 
 
