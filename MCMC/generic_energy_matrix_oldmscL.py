@@ -22,9 +22,12 @@ numbins = 4
 config = ConfigParser.RawConfigParser()
 # everything that needs to be changed goes here ########
 
-config.read('/home/wireland/mscS4-8-15/data/mscL.cfg') #location of config file, change this to run on different datasets
+config.read('/home/wireland/mscS4-8-15/data/oldmscL.cfg') #location of config file, change this to run on different datasets
 mut_region_start = config.getint('Input','mut_region_start') #not base pair number, distance from start of mut region
 mut_region_length = config.getint('Input','mut_region_length')
+data_fn = config.get('Input','data_fn')
+seq_start = config.getint('Input','seq_start')
+seq_end = config.getint('Input','seq_end')
 #data_fnbase = config.get('Input','data_fnbase')
 #expname = config.get('Input','expname') #ex MscS mut1, describes the experiment without the different batch numbers.
 #fnnames = glob.glob(data_fnbase + expname + '*.fasta')
@@ -49,7 +52,6 @@ f = open(data_fn)
 # lines with region of interest selected
 roi_list = [(line.split(',')[0][mut_region_start:mut_region_start+mut_region_length], line.split(',')[1].strip()) for line in f if line.strip()]
 f.close()
-batch_vec_temp = np.array(batch_vec_temp)
 N = len(roi_list)
 index_shuf = range(N)
 batch_vec_temp = np.array([float(roi_list[z][1]) for z in index_shuf])
@@ -59,9 +61,16 @@ seqs = [roi_list[z][0] for z in index_shuf]
 seqs = [seqs[z][seq_start:seq_end] for z in range(0,len(seqs))]
 seqs = [seqs[z][mut_region_start:mut_region_start + mut_region_length] for z in range(0,len(seqs))]
 seqstemp = []
+batch_vec2 = []
 for i in range(numbins):
-	seqstemp = seqstemp + list(set(seqs[np.nonzeros(batch_vec_temp == i)[0]]))
+        indexes = np.nonzero(batch_vec_temp == i)[0]
+	s = []
+	for u in indexes:
+	     s.append(seqs[u])
+	seqstemp = seqstemp + list(set(s))
+	batch_vec2 = batch_vec2 + [i for z in range(len(seqstemp))]
 seqs = seqstemp
+batch_vec_temp = batch_vec2
 
 
 print len(batch_vec_temp)
