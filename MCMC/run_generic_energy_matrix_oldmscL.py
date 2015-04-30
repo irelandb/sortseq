@@ -9,7 +9,8 @@ import ConfigParser
 config = ConfigParser.RawConfigParser()
 # everything that needs to be changed goes here ########
 
-config.read('/home/wireland/mscS4-8-15/data/mscL.cfg') #location of config file, change this to run on different datasets
+config.read('/home/wireland/mscS4-8-15/data/oldmscL.cfg') #location of config file, change this to run on 
+different datasets
 mut_region_start = config.getint('Input','mut_region_start') #not base pair number, distance from start of mut region
 mut_region_length = config.getint('Input','mut_region_length')
 expname = config.get('Input','expname') #ex MscS mut1, describes the experiment without the different batch numbers.
@@ -34,10 +35,11 @@ args = parser.parse_args()
 #print args.db_fn
 fulldbname = '/home/wireland/mscS4-8-15/results/' + str(args.savefn) + str(args.runnum) + '.sql'
 #fulldbname = '/home/wireland/lassoresults/MCMC/MCMCtest3_' + str(args.runnum) + '.sql'
-M = pymc.MCMC(generic_energy_matrix_mscsvariedbin,db='sqlite',dbname=fulldbname)
-M.use_step_method(stepper.GaugePreservingStepper,generic_energy_matrix_mscsvariedbin.emat)
+M = pymc.MCMC(generic_energy_matrix_oldmscL,db='sqlite',dbname=fulldbname)
+M.use_step_method(stepper.GaugePreservingStepper,generic_energy_matrix_oldmscL.emat)
 f = open('/home/wireland/mscS4-8-15/runsdetails/' + str(args.savefn) + str(args.runnum) + '.txt','w')
-f.writelines(['dbname = ' + fulldbname + '\n', 'mut_region_start = ' + str(mut_region_start) + '\n','mut_region_length = ' + str(mut_region_length) + '\n', 'exp_name = ' + str(expname),'unique = True'])
+f.writelines(['dbname = ' + fulldbname + '\n', 'mut_region_start = ' + str(mut_region_start) + 
+'\n','mut_region_length = ' + str(mut_region_length) + '\n', 'exp_name = ' + str(expname) + '\n','unique = True'])
 f.close()
 M.sample(30000,thin=10)
 

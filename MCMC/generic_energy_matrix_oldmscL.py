@@ -10,6 +10,7 @@ import MCMC_utils
 import ConfigParser
 import glob
 import mscscfg
+import MCMC_utils
 import os
 import numpy as np
 import csv
@@ -46,44 +47,9 @@ for row in reader:
     reverse_dict[row['experiment_name']] = row['rev_barcode']
 '''
 
-f = open(data_fn)
-# read lines into one big list and transform into a set. This
-# automatically gets rid of duplicates
-# lines with region of interest selected
-roi_list = [(line.split(',')[0][mut_region_start:mut_region_start+mut_region_length], line.split(',')[1].strip()) for line in f if line.strip()]
-f.close()
-N = len(roi_list)
-index_shuf = range(N)
-batch_vec_temp = np.array([float(roi_list[z][1]) for z in index_shuf])
-batch_vec_temp = batch_vec_temp - batch_vec_temp.min()
-
-seqs = [roi_list[z][0] for z in index_shuf]
-seqs = [seqs[z][seq_start:seq_end] for z in range(0,len(seqs))]
-seqs = [seqs[z][mut_region_start:mut_region_start + mut_region_length] for z in range(0,len(seqs))]
-seqstemp = []
-batch_vec2 = []
-for i in range(numbins):
-        indexes = np.nonzero(batch_vec_temp == i)[0]
-	s = []
-	for u in indexes:
-	     s.append(seqs[u])
-	seqstemp = seqstemp + list(set(s))
-	batch_vec2 = batch_vec2 + [i for z in range(len(seqstemp))]
-seqs = seqstemp
-batch_vec_temp = batch_vec2
+seq_mat_temp,batch_vec_temp = MCMC_utils.load_unique_seqs_batches(data_fn,seq_start + mut_region_start,mut_region_length)
 
 
-print len(batch_vec_temp)
-
-print len(seqs)
-
-seq_mat_temp = np.empty([4,len(seqs[1]),len(seqs)])
-
-
-for i, line in enumerate(seqs):
-    seq_mat_temp[:,:,i] = MCMC_utils.seq2mat(line)
-
-#initial energy matrix
 emat_0 = MCMC_utils.fix_matrix_gauge(sp.randn(4,mut_region_length))
 
 
@@ -91,7 +57,7 @@ emat_0 = MCMC_utils.fix_matrix_gauge(sp.randn(4,mut_region_length))
 
 # shuffle the elements of seq_mat and batch_vec. This will prevent
 # spuriously high mutual information values
-print len
+
 index_shuf = range(len(batch_vec_temp))
 sp.random.shuffle(index_shuf)
 seq_mat = sp.zeros([4,len(seq_mat_temp[0,:,0]),len(seq_mat_temp[0,0,:])],dtype = 'int')

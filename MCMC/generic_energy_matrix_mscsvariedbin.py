@@ -59,8 +59,10 @@ seqs = []
 #filter sequences for only unique sequences in the target range.
 for i in range(0,numbins):
     #tempseqs = list(set(sequences[i])) I instead added this to the next line to make sure only sequences with unique mutated regions are counted.
-    seqs = seqs + list(set([tempseqs[z][mut_region_start:mut_region_start + mut_region_length] for z in range(0,len(tempseqs))]))
-    batch_vec_temp = batch_vec_temp + [i for z in range(0,len(tempseqs))]
+    tempseqs = sequences[i]
+    s2 = list(set([tempseqs[z][mut_region_start:mut_region_start + mut_region_length] for z in range(0,len(tempseqs))]))
+    seqs = seqs + s2
+    batch_vec_temp = batch_vec_temp + [i for z in range(len(s2))]
 
 batch_vec_temp = np.array(batch_vec_temp)
 

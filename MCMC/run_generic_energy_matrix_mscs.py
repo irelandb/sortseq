@@ -37,7 +37,8 @@ fulldbname = '/home/wireland/mscS4-8-15/results/' + str(args.savefn) + str(args.
 M = pymc.MCMC(generic_energy_matrix_mscsvariedbin,db='sqlite',dbname=fulldbname)
 M.use_step_method(stepper.GaugePreservingStepper,generic_energy_matrix_mscsvariedbin.emat)
 f = open('/home/wireland/mscS4-8-15/runsdetails/' + str(args.savefn) + str(args.runnum) + '.txt','w')
-f.writelines(['dbname = ' + fulldbname + '\n', 'mut_region_start = ' + str(mut_region_start) + '\n','mut_region_length = ' + str(mut_region_length) + '\n', 'exp_name = ' + str(expname),'unique = True'])
+f.writelines(['dbname = ' + fulldbname + '\n', 'mut_region_start = ' + str(mut_region_start) + 
+'\n','mut_region_length = ' + str(mut_region_length) + '\n', 'exp_name = ' + str(expname) + '\n','unique = True'])
 f.close()
 M.sample(30000,thin=10)
 
