@@ -17,7 +17,7 @@ import csv
 import readuniqueseqssingleend
 
 
-f = open('/home/wireland/mscS4-8-15/runsdetails/condinfo.txt','r')
+f = open('/home/wireland/mscS4-8-15/runsdetails/numtestinfo.txt','r')
 raw = f.read().split('-')
 condbase = int(raw[0])
 condident = raw[1]
@@ -62,9 +62,10 @@ batch_vec_temp = []
 seqs = []
 #filter sequences for only unique sequences in the target range.
 for i in range(0,numbins):
-    tempseqs = list(set(sequences[i]))
-    seqs = seqs + [tempseqs[z][mut_region_start:mut_region_start + mut_region_length] for z in range(0,len(tempseqs)) if tempseqs[z][condbase] == condident]
-    batch_vec_temp = batch_vec_temp + [i for z in range(0,len(tempseqs)) if tempseqs[z][condbase] == condident]
+    tempseqs = sequences[i]
+    s2 = list(set([tempseqs[z][mut_region_start:mut_region_start + mut_region_length] for z in range(0,len(tempseqs)) if tempseqs[z][condbase] == condident]))
+    seqs = seqs + s2
+    batch_vec_temp = batch_vec_temp + [i for z in range(len(s2))]
 
 batch_vec_temp = np.array(batch_vec_temp)
 
@@ -78,7 +79,7 @@ seq_mat_temp = np.empty([4,len(seqs[1]),len(seqs)])
 if condbase >= mut_region_start and condbase < mut_region_start + mut_region_length:
 	for i, line in enumerate(seqs):
     		seq_mat_temp[:,:,i] = MCMC_utils.seq2mat(line)
-    		seq_mat_temp[:,condbase,i] = MCMC_utils.seq2mat(np.random.choice(['A','C','G','T']))
+    		seq_mat_temp[:,condbase-mut_region_start,i] = MCMC_utils.seq2mat(np.random.choice(['A','C','G','T'])).transpose()
 else:
 	for i, line in enumerate(seqs):
     		seq_mat_temp[:,:,i] = MCMC_utils.seq2mat(line)

@@ -37,8 +37,8 @@ datafnbase = config.get('Input','data_fnbase')
 #datafnbase = '/home/bill/Documents/energymatrix/35_full-cAMP/'
 barcodefn = '/home/bill/Documents/energymatrix/mscS4815/barcodes.csv'
 maindir = os.path.expanduser('~/Documents/energymatrix/mscS4815')
-resultsfn = glob.glob(maindir + '/results/mut*minus10*.sql')
-infofn = glob.glob(maindir + '/runsdetails/mut*minus10*.txt')
+resultsfn = glob.glob(maindir + '/results/mscLpromoter*.sql')
+infofn = glob.glob(maindir + '/runsdetails/mscLpromoter*.txt')
 resultsfn.sort()
 infofn.sort()
 
@@ -82,12 +82,12 @@ for i, fn in enumerate(resultsfn):
     # emat_mean = db.emat.stats()['mean']
     if len(db.trace('emat')[:]) == 3000:
         ematchain = db.trace('emat')[burn_in:]
-        emeans[i,:,:] = MCMC_utils.fix_matrix_gauge(np.mean(ematchain,axis=0)[:,:20])
+        emeans[i,:,:] = MCMC_utils.fix_matrix_gauge(np.mean(ematchain,axis=0))
         if emeans[i,0,0] > 0:
             emeans[i,:,:] = emeans[i,:,:]*-1
         #emeans[i,:,:] = emeans[i,:,:] - emeans[i,:,:].min(axis=0)
         evis[i,:] = emeans[i,:,:].ravel(order='F')
-        estdMCMC[i,:,:] = np.std(ematchain,axis=0)[:,:20]
+        estdMCMC[i,:,:] = np.std(ematchain,axis=0)
 '''        
 std1 = np.std(emeans[:len(resultsfn)/2,:,:],axis=0)
 emean1 = np.mean(emeans[:len(resultsfn)/2,:,:],axis=0)
