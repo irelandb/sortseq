@@ -1,3 +1,4 @@
+from __future__ import division
 import sys
 sys.path.append('/home/wireland/')
 sys.path.append('/home/wireland/sortseq/utils/')
@@ -16,7 +17,9 @@ import csv
 
 import readuniqueseqssingleend
 
-
+f = open('/home/wireland/mscS4-8-15/runsdetails/numberinfo.txt','r')
+raw = f.read().split('-')
+number = int(raw[0])
 
 numbins = 4
 config = ConfigParser.RawConfigParser()
@@ -25,13 +28,12 @@ config = ConfigParser.RawConfigParser()
 config.read('/home/wireland/mscS4-8-15/data/mscL.cfg') #location of config file, change this to run on different datasets
 mut_region_start = config.getint('Input','mut_region_start') #not base pair number, distance from start of mut region
 mut_region_length = config.getint('Input','mut_region_length')
-#data_fnbase = config.get('Input','data_fnbase')
-#expname = config.get('Input','expname') #ex MscS mut1, describes the experiment without the different batch numbers.
-#fnnames = glob.glob(data_fnbase + expname + '*.fasta')
-#fnnames.sort()
+data_fnbase = config.get('Input','data_fnbase')
+expname = config.get('Input','expname') #ex MscS mut1, describes the experiment without the different batch numbers.
+fnnames = glob.glob(data_fnbase + expname + '*.fasta')
+fnnames.sort()
 
 #this section determines from the barcode file where the mutated region starts for this oligo
-'''
 barcodefn = config.get('Input','barcodefn')
 
 barcode_dict = {}
@@ -41,33 +43,43 @@ reader = csv.DictReader(csvfile)
 for row in reader:
     barcode_dict[row['experiment_name']] = row['fwd_barcode']
     reverse_dict[row['experiment_name']] = row['rev_barcode']
-'''
 
-f = open(data_fn)
-# read lines into one big list and transform into a set. This
-# automatically gets rid of duplicates
-# lines with region of interest selected
-roi_list = [(line.split(',')[0][mut_region_start:mut_region_start+mut_region_length], line.split(',')[1].strip()) for line in f if line.strip()]
-f.close()
+
+numseq = [[] for i in range(0,4)]
+seq_mat = [[] for i in range(0,4)]
+
+#read in sequences from files
+sequences = [readuniqueseqssingleend.collatedmat(fn) for fn in fnnames]
+seq_start = len(barcode_dict[expname])
+seq_end = sequences[0][0].find(reverse_dict[expname][0:5])
+print 'sequences loaded'
+print len(sequences[0])
+for i in range(0,numbins):
+    sequences[i] = [sequences[i][z][seq_start:seq_end] for z in range(0,len(sequences[i]))]
+
+batch_vec_temp = []
+seqs = []
+#filter sequences for only unique sequences in the target range.
+for i in range(0,numbins):
+    #tempseqs = list(set(sequences[i])) I instead added this to the next line to make sure only sequences with unique mutated regions are counted.
+    tempseqs = sequences[i]
+    s2 = list(set([tempseqs[z][mut_region_start:mut_region_start + mut_region_length] for z in range(0,len(tempseqs))]))
+    seqs = seqs + s2
+    batch_vec_temp = batch_vec_temp + [i for z in range(len(s2))]
+
+
+N = int(len(batch_vec_temp)/number)
+
+index_shuf = range(len(batch_vec_temp))
+sp.random.shuffle(index_shuf)
+
+seqs = [seqs[z] for z in index_shuf[:N]]
+batch_vec_temp = [batch_vec_temp[z] for z in index_shuf[:N]]
+
 batch_vec_temp = np.array(batch_vec_temp)
-N = len(roi_list)
-index_shuf = range(N)
-batch_vec_temp = np.array([float(roi_list[z][1]) for z in index_shuf])
-batch_vec_temp = batch_vec_temp - batch_vec_temp.min()
-
-seqs = [roi_list[z][0] for z in index_shuf]
-seqs = [seqs[z][seq_start:seq_end] for z in range(0,len(seqs))]
-seqs = [seqs[z][mut_region_start:mut_region_start + mut_region_length] for z in range(0,len(seqs))]
-seqstemp = []
-for i in range(numbins):
-	seqstemp = seqstemp + list(set(seqs[np.nonzeros(batch_vec_temp == i)[0]]))
-seqs = seqstemp
-
-
 print len(batch_vec_temp)
 
 print len(seqs)
-
 seq_mat_temp = np.empty([4,len(seqs[1]),len(seqs)])
 
 

@@ -16,7 +16,7 @@ import readuniqueseqssingleend
 numbins = 4
 config = ConfigParser.RawConfigParser()
 # everything that needs to be changed goes here ########
-allexp = ['MscS mut1', 'MscS mut3','Mut2','Mut3','MscL mut1 new(sorted)']
+allexp = ['Mut2','Mut3','MscL mut1 new(sorted)']
 ##################
 #config.read(os.path.expanduser(mscscfg.cfg_fn))
 config.read('/home/bill/Documents/energymatrix/mscS4815/mscL.cfg')

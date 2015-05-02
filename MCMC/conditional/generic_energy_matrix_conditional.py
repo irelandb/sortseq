@@ -17,7 +17,7 @@ import csv
 import readuniqueseqssingleend
 
 
-f = open('/home/wireland/mscS4-8-15/runsdetails/condinfo.txt','r')
+f = open('/home/wireland/mscS4-8-15/runsdetails/numtestinfo.txt','r')
 raw = f.read().split('-')
 condbase = int(raw[0])
 condident = raw[1]
@@ -65,7 +65,7 @@ for i in range(0,numbins):
     tempseqs = sequences[i]
     s2 = list(set([tempseqs[z][mut_region_start:mut_region_start + mut_region_length] for z in range(0,len(tempseqs)) if tempseqs[z][condbase] == condident]))
     seqs = seqs + s2
-    batch_vec_temp = batch_vec_temp + [i for z in range(len(s2)) if tempseqs[z][condbase] == condident]
+    batch_vec_temp = batch_vec_temp + [i for z in range(len(s2))]
 
 batch_vec_temp = np.array(batch_vec_temp)
 

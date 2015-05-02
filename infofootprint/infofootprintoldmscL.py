@@ -61,7 +61,7 @@ for row in reader:
     barcode_dict[row['experiment_name']] = row['fwd_barcode']
     reverse_dict[row['experiment_name']] = row['rev_barcode']
 '''
-
+'''
 numseq = [[] for i in range(0,4)]
 seq_mat = [[] for i in range(0,4)]
 
@@ -81,7 +81,7 @@ for i in range(0,numbins):
     batch_vec_temp = batch_vec_temp + [i for z in range(0,len(tempseqs))]
 
 batch_vec_temp = np.array(batch_vec_temp)
-
+'''
 #batch_vec_temp = [batch_vec_temp[i] for i in range(0,len(seqs)) if seqs[i].count('A') > 2 and len(seqs[i]) == mut_region_length]
 print len(batch_vec_temp)
 #seqs = [seqs[i] for i in range(0,len(seqs)) if seqs[i].count('A') > 2 and len(seqs[i]) == mut_region_length]
