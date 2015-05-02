@@ -17,7 +17,7 @@ import csv
 import readuniqueseqssingleend
 
 
-f = open('/home/wireland/mscS4-8-15/runsdetails/numtestinfo.txt','r')
+f = open('/home/wireland/mscS4-8-15/runsdetails/condinfo.txt','r')
 raw = f.read().split('-')
 condbase = int(raw[0])
 condident = raw[1]
