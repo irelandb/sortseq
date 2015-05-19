@@ -40,7 +40,8 @@ reader = csv.DictReader(csvfile)
 for row in reader:
     barcode_dict[row['experiment_name']] = row['fwd_barcode']
     reverse_dict[row['experiment_name']] = row['rev_barcode']
-
+    start_dict[row['experiment_name']] = row['startseq']
+    end_dict[row['experiment_name']] = row['endseq']
 
 numseq = [[] for i in range(0,4)]
 seq_mat = [[] for i in range(0,4)]
@@ -48,7 +49,8 @@ seq_mat = [[] for i in range(0,4)]
 #read in sequences from files
 sequences = [readuniqueseqssingleend.collatedmat(fn) for fn in fnnames]
 seq_start = len(barcode_dict[expname])
-seq_end = sequences[0][0].find(reverse_dict[expname][0:5])
+seq_end = seq_start + end_dict[expname] - start_dict[expname]
+#seq_end = sequences[0][0].find(reverse_dict[expname][0:5])
 print 'sequences loaded'
 print len(sequences[0])
 for i in range(0,numbins):
