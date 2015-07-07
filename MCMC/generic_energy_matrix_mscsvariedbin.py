@@ -35,6 +35,8 @@ barcodefn = config.get('Input','barcodefn')
 
 barcode_dict = {}
 reverse_dict = {}
+start_dict = {}
+end_dict = {}
 csvfile = open(barcodefn,'r')
 reader = csv.DictReader(csvfile)
 for row in reader:
@@ -49,7 +51,7 @@ seq_mat = [[] for i in range(0,4)]
 #read in sequences from files
 sequences = [readuniqueseqssingleend.collatedmat(fn) for fn in fnnames]
 seq_start = len(barcode_dict[expname])
-seq_end = seq_start + end_dict[expname] - start_dict[expname]
+seq_end = seq_start + int(end_dict[expname]) - int(start_dict[expname])
 #seq_end = sequences[0][0].find(reverse_dict[expname][0:5])
 print 'sequences loaded'
 print len(sequences[0])
@@ -63,6 +65,7 @@ for i in range(0,numbins):
     #tempseqs = list(set(sequences[i])) I instead added this to the next line to make sure only sequences with unique mutated regions are counted.
     tempseqs = sequences[i]
     s2 = list(set([tempseqs[z][mut_region_start:mut_region_start + mut_region_length] for z in range(0,len(tempseqs))]))
+    s2 = [s2[z] for z in range(len(s2)) if len(s2[z]) == mut_region_length]
     seqs = seqs + s2
     batch_vec_temp = batch_vec_temp + [i for z in range(len(s2))]
 

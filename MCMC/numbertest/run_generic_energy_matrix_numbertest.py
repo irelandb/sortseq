@@ -29,17 +29,17 @@ divisionnum = [2,5,10,25,50,100,200][int(args.runnum)]
 # if cli_cfg != module_cfg:
 #     raise ValueError("generic_energy_matrix module %s and script cli %s are not consistent" % (module_cfg,cli_cfg))
 f = open('/home/wireland/mscS4-8-15/runsdetails/numtestinfo.txt','w')
-f.writelines([divisionnum + '- = divisionnum'])
+f.writelines([str(divisionnum) + '- = divisionnum'])
 f.close()
-import generic_energy_matrix_conditional
+import generic_energy_matrix_numbertest
 import stepper
 #print args.db_fn
 fulldbname = '/home/wireland/mscS4-8-15/results/' + str(args.savefn) + str(args.runnum) + '.sql'
 #fulldbname = '/home/wireland/lassoresults/MCMC/MCMCtest3_' + str(args.runnum) + '.sql'
-M = pymc.MCMC(generic_energy_matrix_conditional,db='sqlite',dbname=fulldbname)
-M.use_step_method(stepper.GaugePreservingStepper,generic_energy_matrix_conditional.emat)
+M = pymc.MCMC(generic_energy_matrix_numbertest,db='sqlite',dbname=fulldbname)
+M.use_step_method(stepper.GaugePreservingStepper,generic_energy_matrix_numbertest.emat)
 f = open('/home/wireland/mscS4-8-15/runsdetails/' + str(args.savefn) + str(args.runnum) + '.txt','w')
-f.writelines([str(args.condbase) + '-' + str(args.condident) + '- = condbase + condident \n', 'dbname = ' + fulldbname + '\n', 'mut_region_start = ' + str(mut_region_start) + '\n', 'mut_region_length = ' + str(mut_region_length) + '\n', 'exp_name = ' + str(expname) + '\n', 'unique = True'])
+f.writelines(['divisionnum = ' + str(divisionnum) + '\n', 'dbname = ' + fulldbname + '\n', 'mut_region_start = ' + str(mut_region_start) + '\n', 'mut_region_length = ' + str(mut_region_length) + '\n', 'exp_name = ' + str(expname) + '\n', 'unique = True'])
 f.close()
 M.sample(30000,thin=10)
 

@@ -17,7 +17,7 @@ import csv
 
 import readuniqueseqssingleend
 
-f = open('/home/wireland/mscS4-8-15/runsdetails/numberinfo.txt','r')
+f = open('/home/wireland/mscS4-8-15/runsdetails/numtestinfo.txt','r')
 raw = f.read().split('-')
 number = int(raw[0])
 
