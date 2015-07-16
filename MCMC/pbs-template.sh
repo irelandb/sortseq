@@ -75,8 +75,7 @@ echo Using ${NPROCS} processors across ${NNODES} nodes
 ## ${MPIRUN} -machinefile $PBS_NODEFILE -np ${NPROCS} my-openmpi-program
 
 ### Or, just run your serial program
-$HOME/sortseq/MCMC/numbertest/run_generic_energy_matrix_numbertest.py $runnum $savefn
-# $HOME/lassotrilacstar.py
+$HOME/sortseqsoftware/scripts/poolemcee.py
 # PBS environment variables available in every batch job:
 #
 # $PBS_ENVIRONMENT set to PBS_BATCH to indicate that the job is a batch job; otherwise,

@@ -75,7 +75,7 @@ echo Using ${NPROCS} processors across ${NNODES} nodes
 ## ${MPIRUN} -machinefile $PBS_NODEFILE -np ${NPROCS} my-openmpi-program
 
 ### Or, just run your serial program
-mpirun $MPI_HOSTS python2.7 /home/wireland/sortseqsoftware/scripts/poolemcee.py
+mpirun --prefix /opt/mpi/openmpi/1.5.4/ $MPI_HOSTS python2.7 /home/wireland/sortseqsoftware/scripts/poolemcee.py
 # PBS environment variables available in every batch job:
 #
 # $PBS_ENVIRONMENT set to PBS_BATCH to indicate that the job is a batch job; otherwise,
